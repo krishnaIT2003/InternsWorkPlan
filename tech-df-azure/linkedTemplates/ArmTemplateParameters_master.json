@@ -1,0 +1,138 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "tech-df-azure"
+		},
+		"AzureDataLakeStorage_d_accountKey": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_d2025_accountKey": {
+			"value": ""
+		},
+		"AzureDatabricks1_accessToken": {
+			"value": ""
+		},
+		"AzureDatabricks2_accessToken": {
+			"value": ""
+		},
+		"AzureDatabricks_Ls_d_accessToken": {
+			"value": ""
+		},
+		"Datalake_linked_service_accountKey": {
+			"value": ""
+		},
+		"HotelBookingLinkedService_accountKey": {
+			"value": ""
+		},
+		"LS_AzureSQLDatabase_password": {
+			"value": ""
+		},
+		"LS_az_sql_db_d_password": {
+			"value": ""
+		},
+		"Y_ls_techcrunch_password": {
+			"value": ""
+		},
+		"ls_blob_storage_connectionString": {
+			"value": ""
+		},
+		"ls_sql_database_password": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_d_properties_typeProperties_url": {
+			"value": "https://storagentern.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage_d2025_properties_typeProperties_url": {
+			"value": "https://storagelake2025.dfs.core.windows.net/"
+		},
+		"AzureDatabricks2_properties_typeProperties_existingClusterId": {
+			"value": "0925-105555-m73bpkjt"
+		},
+		"AzureDatabricks_Ls_d_properties_typeProperties_existingClusterId": {
+			"value": "0925-105555-m73bpkjt"
+		},
+		"Datalake_linked_service_properties_typeProperties_url": {
+			"value": "https://storagelake2025.dfs.core.windows.net/"
+		},
+		"HotelBookingLinkedService_properties_typeProperties_url": {
+			"value": "https://hotelinfo.dfs.core.windows.net/"
+		},
+		"HttpSourcegithub_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"Httpsource_git_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"LS_AzureBlobStorage_Staging_properties_typeProperties_connectionString_secretName": {
+			"value": "Storage-ConnectionString"
+		},
+		"LS_AzureSQLDatabase_properties_typeProperties_server": {
+			"value": "sqlservertechouts.database.windows.net"
+		},
+		"LS_AzureSQLDatabase_properties_typeProperties_database": {
+			"value": "sql_database"
+		},
+		"LS_AzureSQLDatabase_properties_typeProperties_userName": {
+			"value": "sqltechouts"
+		},
+		"LS_KeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://digitlkeyvault123.vault.azure.net/"
+		},
+		"LS_az_sql_db_d_properties_typeProperties_server": {
+			"value": "sqlservertechouts.database.windows.net"
+		},
+		"LS_az_sql_db_d_properties_typeProperties_database": {
+			"value": "sql_database"
+		},
+		"LS_az_sql_db_d_properties_typeProperties_userName": {
+			"value": "sqltechouts"
+		},
+		"RestAmericanpapers_properties_typeProperties_url": {
+			"value": "https://www.loc.gov/collections/chronicling-america/titles/?fo=json&at=content.results"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"value": "https://techcrunch.com/wp-json/wp/v2/posts?per_page=100&context=embed"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_server": {
+			"value": "sqlservertechouts.database.windows.net"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_database": {
+			"value": "sql_database"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_userName": {
+			"value": "sqltechouts"
+		},
+		"Y_ls_techcrunch_properties_typeProperties_server": {
+			"value": "sqlservertechouts.database.windows.net"
+		},
+		"Y_ls_techcrunch_properties_typeProperties_database": {
+			"value": "sql_database"
+		},
+		"Y_ls_techcrunch_properties_typeProperties_userName": {
+			"value": "sqltechouts"
+		},
+		"ls_rest_api_properties_typeProperties_url": {
+			"value": "https://www.loc.gov"
+		},
+		"ls_sql_database_properties_typeProperties_server": {
+			"value": "sqlservertechouts.database.windows.net"
+		},
+		"ls_sql_database_properties_typeProperties_database": {
+			"value": "sql_database"
+		},
+		"ls_sql_database_properties_typeProperties_userName": {
+			"value": "sqltechouts"
+		},
+		"sql_vault_properties_typeProperties_baseUrl": {
+			"value": "https://digitlkeyvault123.vault.azure.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
