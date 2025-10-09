@@ -13,114 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/CDdataflow4')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_rest_newspaper_titles",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_c",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "flatten1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          body as ({content.results} as (access_restricted as boolean, aka as string[], batch as string[], calendar_url as (class as string, icon as string, label as string, screen_readers_only as boolean, url as string, value as string), campaigns as string[], composite_location as string[], contributor as string[], date as string, description as string[], digitized as boolean, extract_timestamp as string, group as string[], hassegments as boolean, id as string, image_url as string[], index as short, item as (call_number as string[], contributors as string[], created_published as string[], date as string, essay_contributor as string[], format as string[], genre as string[], holding_data as (dates as string[], description as string[], institutions as (institution_city as string, institution_name as string, institution_state as string)[], notes as string[], number_holding_type as string[], source_filename as string)[], language as string[], location as string[], medium as string[], notes as string[], other_title as string[], preceding_titles as (label as string, url as string)[], raw_lccn as string, related_titles as (label as string, url as string)[], source_group as string, subjects as string[], succeeding_titles as (label as string, url as string)[], title as string), language as (class as string, label as string, value as string), latlong as double[], location as string[], location_city as string[], location_country as string[], location_county as string[], location_state as (class as string, label as string, value as string), location_str as string, lonlat as double[], number as string[], number_first_issue as (class as string, label as date, url as string, value as string), number_hasessay as (class as string, icon as string, label as boolean, screen_readers_only as boolean, url as string, value as boolean), number_holding_type as string[], number_institution as string[], number_issn as string[], number_issue_count as (class as string, label as short, value as short), number_last_issue as (class as string, label as date, url as string, value as string), number_lccn as string[], number_oclc as integer[], number_preceding_items as string[], number_related_items as string[], number_source_modified as string[], number_succeeding_items as string[], original_format as string[], other_title as string[], partof as string[], partof_collection as string[], partof_division as string[], partof_title as (class as string, label as string, url as string, value as string), publication_frequency as string[], resources as string[], shelf_id as string, site as string[], subject as string[], subject_ethnicity as (class as string, label as string, value as string), timestamp as string, title as string, type as string[], url as string)[]),",
-						"          headers as [string,string]",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     httpMethod: 'GET',",
-						"     timeout: 30,",
-						"     requestInterval: 0,",
-						"     paginationRules: ['supportRFC5988' -> 'true'],",
-						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'documentPerLine']) ~> source1",
-						"source1 foldDown(unroll(body.{content.results}, body.{content.results}),",
-						"     mapColumn(",
-						"          NewspaperTitle = body.{content.results}.title,",
-						"          Lccn = body.{content.results}.number_lccn,",
-						"          Location = body.{content.results}.location,",
-						"          State = body.{content.results}.location_state.label,",
-						"          StartYear = body.{content.results}.item.date,",
-						"          Language = body.{content.results}.language.label,",
-						"          IssueCount = body.{content.results}.number_issue_count.label,",
-						"          Url = body.{content.results}.calendar_url.url,",
-						"          PublicationDetails = body.{content.results}.item.created_published,",
-						"          FirstIssueDate = body.{content.results}.number_first_issue.label,",
-						"          LastIssueDate = body.{content.results}.number_last_issue.label,",
-						"          Oclc = body.{content.results}.number_oclc,",
-						"          Latitude = body.{content.results}.latlong,",
-						"          Longitude = body.{content.results}.latlong",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> flatten1",
-						"flatten1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          NewspaperTitle as string,",
-						"          Lccn as string,",
-						"          Location as string,",
-						"          State as string,",
-						"          StartYear as string,",
-						"          Language as string,",
-						"          IssueCount as integer,",
-						"          Url as string,",
-						"          PublicationDetails as string,",
-						"          FirstIssueDate as string,",
-						"          LastIssueDate as string,",
-						"          Oclc as string,",
-						"          Latitude as decimal(9,6),",
-						"          Longitude as decimal(9,6)",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          NewspaperTitle,",
-						"          Lccn,",
-						"          Location,",
-						"          State,",
-						"          StartYear,",
-						"          Language,",
-						"          IssueCount,",
-						"          Url,",
-						"          PublicationDetails,",
-						"          FirstIssueDate,",
-						"          LastIssueDate,",
-						"          Oclc,",
-						"          Latitude,",
-						"          Longitude",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Techcrunch')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -655,9 +547,7 @@
 				"annotations": [],
 				"lastPublishTime": "2025-10-08T13:50:03Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/CDdataflow4')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/FINALTESTCASE')]",
