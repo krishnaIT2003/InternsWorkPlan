@@ -1,0 +1,12 @@
+{
+	"name": "ds_restAmerican",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestAmericanpapers",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
