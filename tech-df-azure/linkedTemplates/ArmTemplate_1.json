@@ -6,12 +6,91 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "tech-df-azure"
+		},
+		"sql_vault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://digitlkeyvault123.vault.azure.net/"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/sql_vault')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('sql_vault_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/customer')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "customer_silver",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/yaswanthkalyan.p@techouts.com/customer_silver"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks2",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "customer_gold",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "customer_silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/yaswanthkalyan.p@techouts.com/customer_gold"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks2",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-10-04T12:23:41Z"
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/inventory')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -1585,569 +1664,6 @@
 						"type": "String"
 					}
 				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_blob_json_raw')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_blob_storage",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "newspaper_titles.json",
-						"folderPath": "API",
-						"container": "raw-data"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"content.results": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"access_restricted": {
-										"type": "boolean"
-									},
-									"aka": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"batch": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"calendar_url": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"icon": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"screen_readers_only": {
-												"type": "boolean"
-											},
-											"url": {
-												"type": "string"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"campaigns": {
-										"type": "array"
-									},
-									"composite_location": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"date": {
-										"type": "string"
-									},
-									"description": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"digitized": {
-										"type": "boolean"
-									},
-									"extract_timestamp": {
-										"type": "string"
-									},
-									"group": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"hassegments": {
-										"type": "boolean"
-									},
-									"id": {
-										"type": "string"
-									},
-									"image_url": {
-										"type": "array"
-									},
-									"index": {
-										"type": "integer"
-									},
-									"item": {
-										"type": "object",
-										"properties": {
-											"call_number": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"created_published": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"date": {
-												"type": "string"
-											},
-											"format": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"genre": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"holding_data": {
-												"type": "array",
-												"items": {
-													"type": "object",
-													"properties": {
-														"dates": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"description": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"institutions": {
-															"type": "array",
-															"items": {
-																"type": "object",
-																"properties": {
-																	"institution_city": {
-																		"type": "string"
-																	},
-																	"institution_name": {
-																		"type": "string"
-																	},
-																	"institution_state": {
-																		"type": "string"
-																	}
-																}
-															}
-														},
-														"number_holding_type": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"source_filename": {
-															"type": "string"
-														}
-													}
-												}
-											},
-											"language": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"location": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"medium": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"notes": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"preceding_titles": {
-												"type": "array",
-												"items": {
-													"type": "object",
-													"properties": {
-														"label": {
-															"type": "string"
-														},
-														"url": {
-															"type": "string"
-														}
-													}
-												}
-											},
-											"raw_lccn": {
-												"type": "string"
-											},
-											"source_group": {
-												"type": "string"
-											},
-											"subjects": {
-												"type": "array",
-												"items": {
-													"type": "string"
-												}
-											},
-											"succeeding_titles": {
-												"type": "array",
-												"items": {
-													"type": "object",
-													"properties": {
-														"label": {
-															"type": "string"
-														},
-														"url": {
-															"type": "string"
-														}
-													}
-												}
-											},
-											"title": {
-												"type": "string"
-											}
-										}
-									},
-									"language": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"latlong": {
-										"type": "array",
-										"items": {
-											"type": "number"
-										}
-									},
-									"location": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"location_city": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"location_country": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"location_county": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"location_state": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"location_str": {
-										"type": "string"
-									},
-									"lonlat": {
-										"type": "array",
-										"items": {
-											"type": "number"
-										}
-									},
-									"number": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"number_first_issue": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"url": {
-												"type": "string"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"number_hasessay": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"screen_readers_only": {
-												"type": "boolean"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"number_holding_type": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"number_institution": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"number_issn": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"number_issue_count": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"number_last_issue": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"url": {
-												"type": "string"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"number_lccn": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"number_oclc": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"number_preceding_items": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"number_source_modified": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"number_succeeding_items": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"original_format": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"partof": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"partof_collection": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"partof_division": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"partof_title": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"url": {
-												"type": "string"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"publication_frequency": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"resources": {
-										"type": "array"
-									},
-									"shelf_id": {
-										"type": "string"
-									},
-									"site": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"subject": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"subject_ethnicity": {
-										"type": "object",
-										"properties": {
-											"class": {
-												"type": "string"
-											},
-											"label": {
-												"type": "string"
-											},
-											"value": {
-												"type": "string"
-											}
-										}
-									},
-									"timestamp": {
-										"type": "string"
-									},
-									"title": {
-										"type": "string"
-									},
-									"type": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"url": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_bronze')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage_d2025",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "raw_data",
-						"fileSystem": "bronzed"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
 			},
 			"dependsOn": []
 		}
