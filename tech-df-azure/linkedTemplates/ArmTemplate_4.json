@@ -13,6 +13,123 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflow2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_blob_json_raw",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_charisma",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          advanced_search as boolean,",
+						"          aka as string[],",
+						"          breadcrumbs as ({Library of Congress} as string)[],",
+						"          browse as (advanced_search as boolean, advanced_search_dropdowns_per_row as integer, coverage_dates as (end as (day as integer, month as integer, year as integer), start as (day as integer, month as integer, year as integer)), default_state as string, display_options as (options as (field as string, label as string)[]), facets as (include as (field as string)[]), form_facets as (field as string, required as boolean, select as string)[], geoviz as boolean, search_operators as (label as string, name as string)[], style as string, submonth_date_gaps as boolean),",
+						"          collection_titles as (download_formats as (delimiter as string, label as string)[], form_facets as (field as string, label as string, select as string)[], response_fields as string[], table_columns as (field as string, format as string, label as string, sort as string)[]),",
+						"          content as (active as boolean, all_count_size as integer, count as integer, disable_navigation as boolean, download_formats as (delimiter as string, label as string)[], download_options as (label as string, type as string, value as string)[], facet_trail as (facet as string, field as string, superset as string, value as string)[], form_facets as (language as (count as integer, label as string, value as string)[], location_state as (count as integer, label as string, value as string)[], subject_ethnicity as (count as integer, label as string, value as string)[]), image_url as string[], link as string, markup as string, pagination as (current as integer, first as string, from as integer, last as string, next as string, of as integer, page_list as (number as integer, url as string)[], perpage as integer, perpage_options as integer[], previous as string, results as string, to as integer, total as integer), partof as string[], results as (access_restricted as boolean, aka as string[], batch as string[], calendar_url as (class as string, icon as string, label as string, screen_readers_only as boolean, url as string, value as string), campaigns as string[], composite_location as string[], date as string, description as string[], digitized as boolean, extract_timestamp as string, group as string[], hassegments as boolean, id as string, image_url as string[], index as integer, item as (call_number as string[], created_published as string[], date as string, format as string[], genre as string[], holding_data as (dates as string[], description as string[], institutions as (institution_city as string, institution_name as string, institution_state as string)[], number_holding_type as string[], source_filename as string)[], language as string[], location as string[], medium as string[], notes as string[], preceding_titles as (label as string, url as string)[], raw_lccn as string, source_group as string, subjects as string[], succeeding_titles as (label as string, url as string)[], title as string), language as (class as string, label as string, value as string), latlong as double[], location as string[], location_city as string[], location_country as string[], location_county as string[], location_state as (class as string, label as string, value as string), location_str as string, lonlat as double[], number as string[], number_first_issue as (class as string, label as string, url as string, value as string), number_hasessay as (class as string, label as string, screen_readers_only as boolean, value as string), number_holding_type as string[], number_institution as string[], number_issn as string[], number_issue_count as (class as string, label as string, value as string), number_last_issue as (class as string, label as string, url as string, value as string), number_lccn as string[], number_oclc as string[], number_preceding_items as string[], number_source_modified as string[], number_succeeding_items as string[], original_format as string[], partof as string[], partof_collection as string[], partof_division as string[], partof_title as (class as string, label as string, url as string, value as string), publication_frequency as string[], resources as string[], shelf_id as string, site as string[], subject as string[], subject_ethnicity as (class as string, label as string, value as string), timestamp as string, title as string, type as string[], url as string)[], search as (dates as string, facet_limits as string, field as string, hits as integer, in as string, query as string, site as (download_formats as (delimiter as string, label as string)[], form_facets as (field as string, label as string, select as string)[], response_fields as string[], table_columns as (field as string, format as string, label as string, sort as string)[]), sort_by as string, type as string, url as string), slug as string, sortBy as string, style as string, table_columns as (field as string, format as string, label as string, sort as string)[], title as string, url as string, views as (brief as string, current as string, gallery as string, grid as string, list as string, slideshow as string)),",
+						"          digitized as integer,",
+						"          expert_resources as (title as string, url as string)[],",
+						"          featured_items as string[],",
+						"          inherit_from_portal as boolean,",
+						"          {legacy-url} as string,",
+						"          next as string,",
+						"          next_sibling as string,",
+						"          notice as (info as string),",
+						"          options as (access_group as string[], access_group_raw as string, all as string, api_version as string, app_context as string, application_version as string, attribute as string, {attribute!} as string, attribute_map as string, cache_tags as string[], callback as string, clip as string, clip_image_width as string, clip_rotation as string, content_filter as string, content_replacement as string, count as string, dates as string, default_count as integer, delimiter as string, digital_id as string, display_level as string, distance as string, downloadOption as string, duration as double, embed as string[], {embed!} as string[], embedded_content as string, error_response_status as string, excludeTerms as string, facetLimits as string, facetPrefix as string, facet_count as string, facet_style as string, field as string, form_facets as (field as string, label as string, select as string)[], format as string, groupBy as string, host as string, ical as boolean, id as string, ignoreFilters as boolean, iiif as boolean, index as string, inherit_from_browse as boolean, inputEncoding as string, item as string, items as string, keys as string, language as string, latlong as string, method as string, newSearch as string, new_clip_url as boolean, onsite as boolean, operator as string, outputEncoding as string, page_campaigns as string[], path_info as string, port as string, proxypath as string, query_string as string, redirect_proxy as boolean, redirect_to_item as string, referer as string, region as string, release_id as integer, request_host as string, request_params as (fo as string[]), request_url as string, resource as string, resource_sequence as string, response_fields as string[], scheme as string, searchIn as string, searchTerms as string, segments as boolean, site_id as string, site_type as string, solrQuery as string, sortBy as string, sortOrder as string, startPage as string, style as string, suggested as string, target as string, template as string, timestamp as double, tz_aware as string, unionFacets as string, webcast_permalink as string),",
+						"          original_formats as string[],",
+						"          pages as (active as boolean, children as (content as string, link as string, slug as string, status as string, title as string, url as string)[], content as string, featured_items as (carousel_label as string, content as string, content_is_search_results as boolean, count as integer, is_carousel as boolean, status as string), link as string, pagination as string, slug as string, title as string, url as string)[],",
+						"          pagination as (current as integer, first as string, from as integer, last as string, next as string, of as integer, page_list as (number as integer, url as string)[], perpage as integer, perpage_options as integer[], previous as string, results as string, to as integer, total as integer),",
+						"          partof as string[],",
+						"          previous as (active as boolean, content as string, link as string, pagination as string, slug as string, title as string, url as string),",
+						"          previous_sibling as (active as boolean, content as string, link as string, pagination as string, slug as string, title as string, url as string),",
+						"          {research-centers} as string[],",
+						"          search as (inherit_from_browse as boolean, segments as boolean),",
+						"          shards as string[],",
+						"          site_type as string,",
+						"          sitemap as (field as string),",
+						"          subjects as string[],",
+						"          timestamp as integer,",
+						"          title as string,",
+						"          topics as string[],",
+						"          total as integer,",
+						"          views as (brief as string, current as string, gallery as string, grid as string, list as string, slideshow as string)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> source1",
+						"source1 select(mapColumn(",
+						"          advanced_search,",
+						"          digitized,",
+						"          expert_resources,",
+						"          inherit_from_portal,",
+						"          {legacy-url},",
+						"          next,",
+						"          next_sibling,",
+						"          original_formats,",
+						"          partof,",
+						"          {research-centers},",
+						"          shards,",
+						"          site_type,",
+						"          subjects,",
+						"          timestamp,",
+						"          title,",
+						"          topics,",
+						"          total",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          title as string,",
+						"          location_city as string,",
+						"          location_state as string,",
+						"          start_date as integer,",
+						"          language as string,",
+						"          digitized as boolean,",
+						"          issue_count as integer,",
+						"          created_date as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dataflowY')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -119,6 +236,104 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/American')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET"
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_restAmerican",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Americanpapers",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "dataflowY",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflowY",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflowY')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/CDFP2')]",
@@ -318,7 +533,9 @@
 				"annotations": [],
 				"lastPublishTime": "2025-10-07T13:55:50Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow2')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/techcrunch')]",
