@@ -1,0 +1,63 @@
+{
+	"name": "ds_sql_Americanpaperss",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Y_ls_sql_pass",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Lccn",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Location",
+				"type": "nvarchar"
+			},
+			{
+				"name": "state",
+				"type": "nvarchar"
+			},
+			{
+				"name": "StartYear",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Language",
+				"type": "nvarchar"
+			},
+			{
+				"name": "issueCount",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "url",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PublicationDetails",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FirstIssueDate",
+				"type": "date"
+			},
+			{
+				"name": "LastIssueDate",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "AmericanPapers_2"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

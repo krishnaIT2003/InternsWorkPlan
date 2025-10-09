@@ -1,0 +1,64 @@
+{
+	"name": "ds_sql_Americanpapers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Y_ls_sql_pass",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "LCCN",
+				"type": "varchar"
+			},
+			{
+				"name": "NewspaperTitle",
+				"type": "varchar"
+			},
+			{
+				"name": "Location",
+				"type": "varchar"
+			},
+			{
+				"name": "State",
+				"type": "varchar"
+			},
+			{
+				"name": "URL",
+				"type": "varchar"
+			},
+			{
+				"name": "PublicationDetails",
+				"type": "varchar"
+			},
+			{
+				"name": "Language",
+				"type": "varchar"
+			},
+			{
+				"name": "StartYear",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "IssueCount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FirstIssueDate",
+				"type": "date"
+			},
+			{
+				"name": "LastIssueDate",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "AmericanNewspapers"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

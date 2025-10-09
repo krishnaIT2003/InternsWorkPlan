@@ -1,0 +1,9 @@
+{
+	"name": "tech-df-azure",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "db617d2b-15ce-4f4e-ae0d-cf6fbaf728d3",
+		"tenantId": "77a5c670-4ee0-4744-930a-3af979eabcb8"
+	}
+}

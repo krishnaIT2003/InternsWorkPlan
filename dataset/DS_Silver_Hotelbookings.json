@@ -1,0 +1,28 @@
+{
+	"name": "DS_Silver_Hotelbookings",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HotelBookingLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "hotel_bookings_cleaned_@{formatDateTime(utcnow(),'yyyy_MM_dd_HH_mm_ss')}.csv",
+					"type": "Expression"
+				},
+				"folderPath": "hotelbookings",
+				"fileSystem": "silver"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

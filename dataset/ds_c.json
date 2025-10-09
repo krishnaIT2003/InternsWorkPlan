@@ -1,0 +1,79 @@
+{
+	"name": "ds_c",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Y_ls_sql_pass",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "NewspaperTitle",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Lccn",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Location",
+				"type": "nvarchar"
+			},
+			{
+				"name": "State",
+				"type": "nvarchar"
+			},
+			{
+				"name": "StartYear",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Language",
+				"type": "nvarchar"
+			},
+			{
+				"name": "IssueCount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Url",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PublicationDetails",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FirstIssueDate",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LastIssueDate",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Oclc",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Latitude",
+				"type": "decimal",
+				"precision": 9,
+				"scale": 6
+			},
+			{
+				"name": "Longitude",
+				"type": "decimal",
+				"precision": 9,
+				"scale": 6
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NewspaperTitles"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

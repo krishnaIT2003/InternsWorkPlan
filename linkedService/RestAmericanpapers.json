@@ -1,0 +1,13 @@
+{
+	"name": "RestAmericanpapers",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://www.loc.gov/collections/chronicling-america/titles/?fo=json&at=content.results",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}

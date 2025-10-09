@@ -1,0 +1,13 @@
+{
+	"name": "RestAmericapapers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestAmericanpapers",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

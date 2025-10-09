@@ -1,0 +1,52 @@
+{
+	"name": "ds_sql_final",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sql_database",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "newspaper_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "newspaper_title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "city",
+				"type": "nvarchar"
+			},
+			{
+				"name": "state",
+				"type": "nvarchar"
+			},
+			{
+				"name": "start_year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "newspaper_language",
+				"type": "nvarchar"
+			},
+			{
+				"name": "is_digitized",
+				"type": "bit"
+			},
+			{
+				"name": "total_issues",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NewspaperData"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

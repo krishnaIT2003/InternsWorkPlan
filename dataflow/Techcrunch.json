@@ -1,0 +1,111 @@
+{
+	"name": "Techcrunch",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sink_techcrunch",
+						"type": "DatasetReference"
+					},
+					"name": "SourceTechCrunchJSON"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_Techcrunch_v2",
+						"type": "DatasetReference"
+					},
+					"name": "SinkToSQLTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectAndRenameColumns"
+				},
+				{
+					"name": "DeduplicateRows"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {_links} as (about as (href as string)[], author as (embeddable as boolean, href as string)[], collection as (href as string)[], curies as (href as string, name as string, templated as boolean)[], {predecessor-version} as (href as string, id as integer)[], replies as (embeddable as boolean, href as string)[], self as (href as string, targetHints as (allow as string[]))[], {version-history} as (count as short, href as string)[], {wp:attachment} as (href as string)[], {wp:featuredmedia} as (embeddable as boolean, href as string)[], {wp:term} as (embeddable as boolean, href as string, taxonomy as string)[]),",
+				"          apple_news_notices as string[],",
+				"          author as integer,",
+				"          date as string,",
+				"          excerpt as (protected as boolean, rendered as string),",
+				"          featured_media as integer,",
+				"          id as integer,",
+				"          jetpack_featured_media_url as string,",
+				"          jetpack_sharing_enabled as boolean,",
+				"          link as string,",
+				"          parsely as (canonical_url as string, meta as ({@context} as string, {@type} as string, articleSection as string, author as ({@type} as string, name as string)[], creator as string[], dateCreated as timestamp, dateModified as timestamp, datePublished as timestamp, headline as string, image as ({@type} as string, url as string), keywords as string[], mainEntityOfPage as ({@id} as string, {@type} as string), publisher as ({@type} as string, logo as string, name as string), thumbnailUrl as string, url as string), rendered as string, smart_links as (inbound as boolean, outbound as boolean), tracker_url as string, traffic_boost_suggestions_count as boolean, version as string),",
+				"          slug as string,",
+				"          title as (rendered as string),",
+				"          type as string,",
+				"          yoast_head as string,",
+				"          yoast_head_json as (article_modified_time as string, article_published_time as string, article_publisher as string, author as string, canonical as string, description as string, og_description as string, og_image as (height as short, type as string, url as string, width as short)[], og_locale as string, og_site_name as string, og_title as string, og_type as string, og_url as string, robots as (follow as string, index as string, {max-image-preview} as string, {max-snippet} as string, {max-video-preview} as string), schema as ({@context} as string, {@graph} as ({@id} as string, {@type} as string, alternateName as string, articleSection as string[], author as ({@id} as string, name as string), breadcrumb as ({@id} as string), caption as string, contentUrl as string, copyrightHolder as ({@id} as string), copyrightYear as short, dateModified as string, datePublished as string, description as string, headline as string, height as short, image as ({@id} as string, {@type} as string, caption as string, contentUrl as string, inLanguage as string, url as string), inLanguage as string, isPartOf as ({@id} as string), itemListElement as ({@type} as string, item as string, name as string, position as short)[], jobTitle as string, keywords as string[], logo as ({@id} as string, {@type} as string, caption as string, contentUrl as string, height as short, inLanguage as string, url as string, width as short), mainEntityOfPage as ({@id} as string), name as string, potentialAction as ({@type} as string, {query-input} as ({@type} as string, valueName as string, valueRequired as boolean), target as string)[], primaryImageOfPage as ({@id} as string), publisher as ({@id} as string), sameAs as string[], thumbnailUrl as string, url as string, width as short, wordCount as short)[]), title as string, twitter_card as string, twitter_creator as string, twitter_misc as ({Est. reading time} as string, {Written by} as string), twitter_site as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> SourceTechCrunchJSON",
+				"SourceTechCrunchJSON select(mapColumn(",
+				"          apple_news_notices,",
+				"          AuthorId = author,",
+				"          PublicationDate = date,",
+				"          excerpt,",
+				"          featured_media,",
+				"          PostId = id,",
+				"          jetpack_featured_media_url,",
+				"          jetpack_sharing_enabled,",
+				"          PostUrl = link,",
+				"          parsely,",
+				"          slug,",
+				"          Title = title.rendered,",
+				"          type,",
+				"          yoast_head,",
+				"          yoast_head_json",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectAndRenameColumns",
+				"SelectAndRenameColumns aggregate(groupBy(PostId),",
+				"     AuthorId = first(AuthorId),",
+				"          PublicationDate = first(PublicationDate),",
+				"          PostUrl = first(PostUrl),",
+				"          Title = first(Title)) ~> DeduplicateRows",
+				"DeduplicateRows alterRow(upsertIf(true())) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PostID as integer,",
+				"          PublicationDate as string,",
+				"          Title as string,",
+				"          PostURL as string,",
+				"          AuthorID as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['PostID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PostID = PostId,",
+				"          PublicationDate,",
+				"          Title,",
+				"          PostURL = PostUrl,",
+				"          AuthorID = AuthorId",
+				"     )) ~> SinkToSQLTable"
+			]
+		}
+	}
+}

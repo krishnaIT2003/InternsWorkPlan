@@ -1,0 +1,57 @@
+{
+	"name": "ds_sql_newspaper",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sql_database",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "location_city",
+				"type": "nvarchar"
+			},
+			{
+				"name": "location_state",
+				"type": "nvarchar"
+			},
+			{
+				"name": "start_date",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "language",
+				"type": "nvarchar"
+			},
+			{
+				"name": "digitized",
+				"type": "bit"
+			},
+			{
+				"name": "issue_count",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "created_date",
+				"type": "datetime2",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NewspaperTitles"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

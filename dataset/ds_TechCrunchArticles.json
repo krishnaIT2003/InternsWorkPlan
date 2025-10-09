@@ -1,0 +1,42 @@
+{
+	"name": "ds_TechCrunchArticles",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Y_ls_sql_pass",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PostID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PublicationDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PostURL",
+				"type": "nvarchar"
+			},
+			{
+				"name": "AuthorID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TechCrunchArticles"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

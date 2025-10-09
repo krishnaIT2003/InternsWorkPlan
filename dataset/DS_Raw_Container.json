@@ -1,0 +1,124 @@
+{
+	"name": "DS_Raw_Container",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Datalake_linked_service",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "entity_id",
+				"type": "String"
+			},
+			{
+				"name": "increment_id",
+				"type": "String"
+			},
+			{
+				"name": "parent_id",
+				"type": "String"
+			},
+			{
+				"name": "created_at",
+				"type": "String"
+			},
+			{
+				"name": "updated_at",
+				"type": "String"
+			},
+			{
+				"name": "is_active",
+				"type": "String"
+			},
+			{
+				"name": "city",
+				"type": "String"
+			},
+			{
+				"name": "company",
+				"type": "String"
+			},
+			{
+				"name": "country_id",
+				"type": "String"
+			},
+			{
+				"name": "fax",
+				"type": "String"
+			},
+			{
+				"name": "firstname",
+				"type": "String"
+			},
+			{
+				"name": "lastname",
+				"type": "String"
+			},
+			{
+				"name": "middlename",
+				"type": "String"
+			},
+			{
+				"name": "postcode",
+				"type": "String"
+			},
+			{
+				"name": "prefix",
+				"type": "String"
+			},
+			{
+				"name": "region",
+				"type": "String"
+			},
+			{
+				"name": "region_id",
+				"type": "String"
+			},
+			{
+				"name": "street",
+				"type": "String"
+			},
+			{
+				"name": "suffix",
+				"type": "String"
+			},
+			{
+				"name": "telephone",
+				"type": "String"
+			},
+			{
+				"name": "vat_id",
+				"type": "String"
+			},
+			{
+				"name": "vat_is_valid",
+				"type": "String"
+			},
+			{
+				"name": "vat_request_date",
+				"type": "String"
+			},
+			{
+				"name": "vat_request_id",
+				"type": "String"
+			},
+			{
+				"name": "vat_request_success",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
