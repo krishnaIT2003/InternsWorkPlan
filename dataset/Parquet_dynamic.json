@@ -2,7 +2,7 @@
 	"name": "Parquet_dynamic",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_data3",
+			"referenceName": "n_ls_datalake",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
@@ -37,5 +37,6 @@
 			"compressionCodec": "snappy"
 		},
 		"schema": []
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

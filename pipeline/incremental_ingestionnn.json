@@ -1,13 +1,13 @@
 {
-	"name": "spotify",
+	"name": "incremental_ingestionnn",
 	"properties": {
 		"activities": [
 			{
-				"name": "AzureSqlToLake",
+				"name": "CopySqltoDatalake",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "last_cdc",
+						"activity": "Last_cdc",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -31,7 +31,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where @{pipeline().parameters.cdc_col}>'@{activity('last_cdc').output.value[0].cdc}'",
+							"value": "SELECT * \nFROM @{pipeline().parameters.schema}.@{pipeline().parameters.table} \nWHERE @{pipeline().parameters.cdc_col} > '@{activity('Last_cdc').output.value[0].cdc}'\n",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -58,7 +58,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "dssoptifySql",
+						"referenceName": "azure_sql",
 						"type": "DatasetReference"
 					}
 				],
@@ -67,13 +67,13 @@
 						"referenceName": "Parquet_dynamic",
 						"type": "DatasetReference",
 						"parameters": {
-							"container": "bronze",
+							"container": "nbronze",
 							"folder": {
 								"value": "@pipeline().parameters.table",
 								"type": "Expression"
 							},
 							"file": {
-								"value": "@concat(pipeline().parameters.table,'_',variables('current'))",
+								"value": "@concat(pipeline().parameters.table, '-', variables('current'))\n",
 								"type": "Expression"
 							}
 						}
@@ -81,7 +81,7 @@
 				]
 			},
 			{
-				"name": "last_cdc",
+				"name": "Last_cdc",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -108,9 +108,9 @@
 						"referenceName": "Json_dynamic",
 						"type": "DatasetReference",
 						"parameters": {
-							"file": "cdc.json",
+							"container": "nbronze",
 							"folder": "cdc",
-							"container": "bronze"
+							"file": "cdc.json"
 						}
 					},
 					"firstRowOnly": false
@@ -134,11 +134,11 @@
 				}
 			},
 			{
-				"name": "If Condition1",
+				"name": "IfIncrementalData",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "AzureSqlToLake",
+						"activity": "CopySqltoDatalake",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -147,7 +147,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@greater(activity('AzureSqlToLake').output.dataread,0 )",
+						"value": "@greater(activity('CopySqltoDatalake').output.dataRead, 0)\n",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
@@ -168,12 +168,15 @@
 									"referenceName": "Parquet_dynamic",
 									"type": "DatasetReference",
 									"parameters": {
-										"container": "bronze",
+										"container": "nbronze",
 										"folder": {
 											"value": "@pipeline().parameters.table",
 											"type": "Expression"
 										},
-										"file": "@concat(pipeline().parameters.table,'_',variables('current'))"
+										"file": {
+											"value": "@concat(pipeline().parameters.table, '_', variables('current'))\n",
+											"type": "Expression"
+										}
 									}
 								},
 								"enableLogging": false,
@@ -186,35 +189,6 @@
 						}
 					],
 					"ifTrueActivities": [
-						{
-							"name": "max_cdc",
-							"type": "Script",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"linkedServiceName": {
-								"referenceName": "LS_spotify_sql",
-								"type": "LinkedServiceReference"
-							},
-							"typeProperties": {
-								"scripts": [
-									{
-										"type": "Query",
-										"text": {
-											"value": "select MAX(@{pipeline().parameters.cdc_col})as cdc from @{pipeline().parameters.schema}.@{pipeline().parameters.table}",
-											"type": "Expression"
-										}
-									}
-								],
-								"scriptBlockExecutionTimeout": "02:00:00"
-							}
-						},
 						{
 							"name": "update_last_cdc",
 							"type": "Copy",
@@ -241,7 +215,7 @@
 										{
 											"name": "cdc",
 											"value": {
-												"value": "@activity('max_cdc').output.resultSets[0].rows[0].cdc",
+												"value": "@activity('max_cdc').output.resultSets[0].rows[0].cdc\n",
 												"type": "Expression"
 											}
 										}
@@ -271,9 +245,9 @@
 									"referenceName": "Json_dynamic",
 									"type": "DatasetReference",
 									"parameters": {
-										"file": "empty.json",
+										"container": "nbronze",
 										"folder": "cdc",
-										"container": "bronze"
+										"file": "empty.json"
 									}
 								}
 							],
@@ -282,12 +256,41 @@
 									"referenceName": "Json_dynamic",
 									"type": "DatasetReference",
 									"parameters": {
-										"file": "cdc.json",
+										"container": "nbronze",
 										"folder": "cdc",
-										"container": "bronze"
+										"file": "cdc.json"
 									}
 								}
 							]
+						},
+						{
+							"name": "max_cdc",
+							"type": "Script",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "ls_azuresql",
+								"type": "LinkedServiceReference"
+							},
+							"typeProperties": {
+								"scripts": [
+									{
+										"type": "Query",
+										"text": {
+											"value": "SELECT MAX(@{pipeline().parameters.cdc_col}) as cdc\nFROM @{pipeline().parameters.schema}.@{pipeline().parameters.table}\n\n",
+											"type": "Expression"
+										}
+									}
+								],
+								"scriptBlockExecutionTimeout": "02:00:00"
+							}
 						}
 					]
 				}
@@ -310,7 +313,7 @@
 			}
 		},
 		"annotations": [],
-		"lastPublishTime": "2025-10-13T14:00:16Z"
+		"lastPublishTime": "2025-10-13T14:00:05Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

@@ -1,8 +1,8 @@
 {
-	"name": "dssoptifySql",
+	"name": "azure_sql",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "LS_spotify_sql",
+			"referenceName": "ls_azuresql",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

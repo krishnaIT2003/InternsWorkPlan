@@ -2,17 +2,17 @@
 	"name": "Json_dynamic",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_data3",
+			"referenceName": "n_ls_datalake",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"file": {
+			"container": {
 				"type": "string"
 			},
 			"folder": {
 				"type": "string"
 			},
-			"container": {
+			"file": {
 				"type": "string"
 			}
 		},
@@ -35,6 +35,14 @@
 				}
 			}
 		},
-		"schema": {}
-	}
+		"schema": {
+			"type": "object",
+			"properties": {
+				"cdc": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
