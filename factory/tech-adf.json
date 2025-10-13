@@ -1,0 +1,9 @@
+{
+	"name": "tech-adf",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "45895bbb-824a-4127-8e99-2d55b04fc08d",
+		"tenantId": "77a5c670-4ee0-4744-930a-3af979eabcb8"
+	}
+}
