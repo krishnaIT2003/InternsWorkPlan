@@ -1,0 +1,1835 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "tech-adf"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Json_source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_d2025",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "lookup.json",
+						"fileSystem": "parameters"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"p_rel_url": {
+							"type": "string"
+						},
+						"p_sink_folder": {
+							"type": "string"
+						},
+						"p_sink_file": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Parquet_dynamic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_data3",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container": {
+						"type": "string"
+					},
+					"folder": {
+						"type": "string"
+					},
+					"file": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().folder",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().container",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestAmericapapers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestAmericanpapers",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob_storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "newspaper_titles.json",
+						"container": "raw-data"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"content.results": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"access_restricted": {
+										"type": "boolean"
+									},
+									"aka": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"batch": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"calendar_url": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"icon": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"screen_readers_only": {
+												"type": "boolean"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"campaigns": {
+										"type": "array"
+									},
+									"composite_location": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"date": {
+										"type": "string"
+									},
+									"description": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"digitized": {
+										"type": "boolean"
+									},
+									"extract_timestamp": {
+										"type": "string"
+									},
+									"group": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"hassegments": {
+										"type": "boolean"
+									},
+									"id": {
+										"type": "string"
+									},
+									"image_url": {
+										"type": "array"
+									},
+									"index": {
+										"type": "integer"
+									},
+									"item": {
+										"type": "object",
+										"properties": {
+											"call_number": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"created_published": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"date": {
+												"type": "string"
+											},
+											"format": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"genre": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"holding_data": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"dates": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"description": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"institutions": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"institution_city": {
+																		"type": "string"
+																	},
+																	"institution_name": {
+																		"type": "string"
+																	},
+																	"institution_state": {
+																		"type": "string"
+																	}
+																}
+															}
+														},
+														"number_holding_type": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"source_filename": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"language": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"location": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"medium": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"notes": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"preceding_titles": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"label": {
+															"type": "string"
+														},
+														"url": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"raw_lccn": {
+												"type": "string"
+											},
+											"source_group": {
+												"type": "string"
+											},
+											"subjects": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"succeeding_titles": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"label": {
+															"type": "string"
+														},
+														"url": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"title": {
+												"type": "string"
+											}
+										}
+									},
+									"language": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"latlong": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"location": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_city": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_country": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_county": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_state": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"location_str": {
+										"type": "string"
+									},
+									"lonlat": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"number": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_first_issue": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_hasessay": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"screen_readers_only": {
+												"type": "boolean"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_holding_type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_institution": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_issn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_issue_count": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_last_issue": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_lccn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_oclc": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_preceding_items": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_source_modified": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_succeeding_items": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"original_format": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_collection": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_division": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_title": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"publication_frequency": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"resources": {
+										"type": "array"
+									},
+									"shelf_id": {
+										"type": "string"
+									},
+									"site": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"subject": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"subject_ethnicity": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"timestamp": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"url": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_d",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "destination",
+						"fileSystem": "deekshitha"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "transaction_id",
+						"type": "String"
+					},
+					{
+						"name": "transactional_date",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "customer_id",
+						"type": "String"
+					},
+					{
+						"name": "payment",
+						"type": "String"
+					},
+					{
+						"name": "credit_card",
+						"type": "String"
+					},
+					{
+						"name": "loyalty_card",
+						"type": "String"
+					},
+					{
+						"name": "cost",
+						"type": "String"
+					},
+					{
+						"name": "quantity",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_blob_json_raw')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob_storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "newspaper_titles.json",
+						"folderPath": "API",
+						"container": "raw-data"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"content.results": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"access_restricted": {
+										"type": "boolean"
+									},
+									"aka": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"batch": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"calendar_url": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"icon": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"screen_readers_only": {
+												"type": "boolean"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"campaigns": {
+										"type": "array"
+									},
+									"composite_location": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"date": {
+										"type": "string"
+									},
+									"description": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"digitized": {
+										"type": "boolean"
+									},
+									"extract_timestamp": {
+										"type": "string"
+									},
+									"group": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"hassegments": {
+										"type": "boolean"
+									},
+									"id": {
+										"type": "string"
+									},
+									"image_url": {
+										"type": "array"
+									},
+									"index": {
+										"type": "integer"
+									},
+									"item": {
+										"type": "object",
+										"properties": {
+											"call_number": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"created_published": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"date": {
+												"type": "string"
+											},
+											"format": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"genre": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"holding_data": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"dates": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"description": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"institutions": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"institution_city": {
+																		"type": "string"
+																	},
+																	"institution_name": {
+																		"type": "string"
+																	},
+																	"institution_state": {
+																		"type": "string"
+																	}
+																}
+															}
+														},
+														"number_holding_type": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"source_filename": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"language": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"location": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"medium": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"notes": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"preceding_titles": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"label": {
+															"type": "string"
+														},
+														"url": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"raw_lccn": {
+												"type": "string"
+											},
+											"source_group": {
+												"type": "string"
+											},
+											"subjects": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"succeeding_titles": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"label": {
+															"type": "string"
+														},
+														"url": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"title": {
+												"type": "string"
+											}
+										}
+									},
+									"language": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"latlong": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"location": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_city": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_country": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_county": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_state": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"location_str": {
+										"type": "string"
+									},
+									"lonlat": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"number": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_first_issue": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_hasessay": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"screen_readers_only": {
+												"type": "boolean"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_holding_type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_institution": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_issn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_issue_count": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_last_issue": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_lccn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_oclc": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_preceding_items": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_source_modified": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_succeeding_items": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"original_format": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_collection": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_division": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_title": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"publication_frequency": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"resources": {
+										"type": "array"
+									},
+									"shelf_id": {
+										"type": "string"
+									},
+									"site": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"subject": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"subject_ethnicity": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"timestamp": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"url": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bronze')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_d2025",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "raw_data",
+						"fileSystem": "bronzed"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_git')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "HttpSourcegithub",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"load_flag": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "anshlambagit/Azure-DE-Project-Resources/refs/heads/main/Raw%20Data/@{dataset().load_flag}\n",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_restAmerican')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestAmericanpapers",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_rest_newspaper_titles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_rest_api",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": "collections/chronicling-america/titles/?fo=json&at=content.results"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_d",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_final')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_database",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "newspaper_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "newspaper_title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "start_year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "newspaper_language",
+						"type": "nvarchar"
+					},
+					{
+						"name": "is_digitized",
+						"type": "bit"
+					},
+					{
+						"name": "total_issues",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NewspaperData"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_newspaper')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_database",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "location_city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "location_state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "start_date",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "language",
+						"type": "nvarchar"
+					},
+					{
+						"name": "digitized",
+						"type": "bit"
+					},
+					{
+						"name": "issue_count",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "created_date",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NewspaperTitles"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_newspaper_table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_database",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "location_city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "location_state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "start_date",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "language",
+						"type": "nvarchar"
+					},
+					{
+						"name": "digitized",
+						"type": "bit"
+					},
+					{
+						"name": "issue_count",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "created_date",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NewspaperTitles"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_newspaperr')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_database",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "location_city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "location_state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "start_date",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "language",
+						"type": "nvarchar"
+					},
+					{
+						"name": "digitized",
+						"type": "bit"
+					},
+					{
+						"name": "issue_count",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "created_date",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NewspaperTitles"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_techcrunch')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dssoptifySql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_spotify_sql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/http_source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Httpsource_git",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_rel_url": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().p_rel_url",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_d",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_file_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().p_file_name",
+							"type": "Expression"
+						},
+						"folderPath": "source",
+						"fileSystem": "deekshitha"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Item_Identifier",
+						"type": "String"
+					},
+					{
+						"name": "Item_Weight",
+						"type": "String"
+					},
+					{
+						"name": "Item_Fat_Content",
+						"type": "String"
+					},
+					{
+						"name": "Item_Visibility",
+						"type": "String"
+					},
+					{
+						"name": "Item_Type",
+						"type": "String"
+					},
+					{
+						"name": "Item_MRP",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Identifier",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Establishment_Year",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Size",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Location_Type",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Type",
+						"type": "String"
+					},
+					{
+						"name": "Item_Outlet_Sales",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/report_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_d",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_file_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().p_file_name",
+							"type": "Expression"
+						},
+						"folderPath": "destination",
+						"fileSystem": "deekshitha"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Item_Identifier",
+						"type": "String"
+					},
+					{
+						"name": "Item_Weight",
+						"type": "String"
+					},
+					{
+						"name": "Item_Fat_Content",
+						"type": "String"
+					},
+					{
+						"name": "Item_Visibility",
+						"type": "String"
+					},
+					{
+						"name": "Item_Type",
+						"type": "String"
+					},
+					{
+						"name": "Item_MRP",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Identifier",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Establishment_Year",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Size",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Location_Type",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Type",
+						"type": "String"
+					},
+					{
+						"name": "Item_Outlet_Sales",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		}
+	]
+}

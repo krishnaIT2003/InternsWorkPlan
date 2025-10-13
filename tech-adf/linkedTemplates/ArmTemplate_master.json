@@ -1,0 +1,465 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "tech-adf"
+		},
+		"AzureDataLakeStorage_d_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage_d'"
+		},
+		"AzureDataLakeStorage_d2025_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage_d2025'"
+		},
+		"AzureDatabricks1_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+		},
+		"AzureDatabricks2_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks2'"
+		},
+		"AzureDatabricks_Ls_d_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks_Ls_d'"
+		},
+		"Datalake_linked_service_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'Datalake_linked_service'"
+		},
+		"HotelBookingLinkedService_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'HotelBookingLinkedService'"
+		},
+		"LS_AzureSQLDatabase_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_AzureSQLDatabase'"
+		},
+		"LS_az_sql_db_d_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_az_sql_db_d'"
+		},
+		"LS_spotify_sql_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_spotify_sql'"
+		},
+		"Y_ls_techcrunch_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'Y_ls_techcrunch'"
+		},
+		"ls_blob_storage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_blob_storage'"
+		},
+		"ls_data3_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_data3'"
+		},
+		"ls_sql_database_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_sql_database'"
+		},
+		"n_ls_datalake_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'n_ls_datalake'"
+		},
+		"AzureDataLakeStorage_d_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storagentern.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage_d2025_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storagelake2025.dfs.core.windows.net/"
+		},
+		"AzureDatabricks2_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0925-105555-m73bpkjt"
+		},
+		"AzureDatabricks_Ls_d_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0925-105555-m73bpkjt"
+		},
+		"Datalake_linked_service_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storagelake2025.dfs.core.windows.net/"
+		},
+		"HotelBookingLinkedService_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://hotelinfo.dfs.core.windows.net/"
+		},
+		"HttpSourcegithub_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"Httpsource_git_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"LS_AzureBlobStorage_Staging_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "Storage-ConnectionString"
+		},
+		"LS_AzureSQLDatabase_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlservertechouts.database.windows.net"
+		},
+		"LS_AzureSQLDatabase_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sql_database"
+		},
+		"LS_AzureSQLDatabase_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqltechouts"
+		},
+		"LS_KeyVault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://digitlkeyvault123.vault.azure.net/"
+		},
+		"LS_az_sql_db_d_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlservertechouts.database.windows.net"
+		},
+		"LS_az_sql_db_d_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sql_database"
+		},
+		"LS_az_sql_db_d_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqltechouts"
+		},
+		"LS_spotify_sql_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlserverthree3.database.windows.net"
+		},
+		"LS_spotify_sql_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sqldatabase3"
+		},
+		"LS_spotify_sql_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqlTechouts"
+		},
+		"RestAmericanpapers_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.loc.gov/collections/chronicling-america/titles/?fo=json&at=content.results"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://techcrunch.com/wp-json/wp/v2/posts?per_page=100&context=embed"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlservertechouts.database.windows.net"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sql_database"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqltechouts"
+		},
+		"Y_ls_techcrunch_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlservertechouts.database.windows.net"
+		},
+		"Y_ls_techcrunch_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sql_database"
+		},
+		"Y_ls_techcrunch_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqltechouts"
+		},
+		"ls_data3_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://stroragethree.dfs.core.windows.net/"
+		},
+		"ls_rest_api_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.loc.gov"
+		},
+		"ls_sql_database_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlservertechouts.database.windows.net"
+		},
+		"ls_sql_database_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sql_database"
+		},
+		"ls_sql_database_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqltechouts"
+		},
+		"n_ls_datalake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://stroragethree.dfs.core.windows.net/"
+		},
+		"sql_vault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://digitlkeyvault123.vault.azure.net/"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "tech-adf_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureDataLakeStorage_d_accountKey": {
+						"value": "[parameters('AzureDataLakeStorage_d_accountKey')]"
+					},
+					"AzureDataLakeStorage_d2025_accountKey": {
+						"value": "[parameters('AzureDataLakeStorage_d2025_accountKey')]"
+					},
+					"AzureDatabricks1_accessToken": {
+						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					},
+					"AzureDatabricks2_accessToken": {
+						"value": "[parameters('AzureDatabricks2_accessToken')]"
+					},
+					"AzureDatabricks_Ls_d_accessToken": {
+						"value": "[parameters('AzureDatabricks_Ls_d_accessToken')]"
+					},
+					"Datalake_linked_service_accountKey": {
+						"value": "[parameters('Datalake_linked_service_accountKey')]"
+					},
+					"HotelBookingLinkedService_accountKey": {
+						"value": "[parameters('HotelBookingLinkedService_accountKey')]"
+					},
+					"LS_AzureSQLDatabase_password": {
+						"value": "[parameters('LS_AzureSQLDatabase_password')]"
+					},
+					"LS_az_sql_db_d_password": {
+						"value": "[parameters('LS_az_sql_db_d_password')]"
+					},
+					"LS_spotify_sql_password": {
+						"value": "[parameters('LS_spotify_sql_password')]"
+					},
+					"Y_ls_techcrunch_password": {
+						"value": "[parameters('Y_ls_techcrunch_password')]"
+					},
+					"ls_blob_storage_connectionString": {
+						"value": "[parameters('ls_blob_storage_connectionString')]"
+					},
+					"ls_data3_accountKey": {
+						"value": "[parameters('ls_data3_accountKey')]"
+					},
+					"AzureDataLakeStorage_d_properties_typeProperties_url": {
+						"value": "[parameters('AzureDataLakeStorage_d_properties_typeProperties_url')]"
+					},
+					"AzureDataLakeStorage_d2025_properties_typeProperties_url": {
+						"value": "[parameters('AzureDataLakeStorage_d2025_properties_typeProperties_url')]"
+					},
+					"AzureDatabricks2_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks2_properties_typeProperties_existingClusterId')]"
+					},
+					"AzureDatabricks_Ls_d_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks_Ls_d_properties_typeProperties_existingClusterId')]"
+					},
+					"Datalake_linked_service_properties_typeProperties_url": {
+						"value": "[parameters('Datalake_linked_service_properties_typeProperties_url')]"
+					},
+					"HotelBookingLinkedService_properties_typeProperties_url": {
+						"value": "[parameters('HotelBookingLinkedService_properties_typeProperties_url')]"
+					},
+					"HttpSourcegithub_properties_typeProperties_url": {
+						"value": "[parameters('HttpSourcegithub_properties_typeProperties_url')]"
+					},
+					"Httpsource_git_properties_typeProperties_url": {
+						"value": "[parameters('Httpsource_git_properties_typeProperties_url')]"
+					},
+					"LS_AzureSQLDatabase_properties_typeProperties_server": {
+						"value": "[parameters('LS_AzureSQLDatabase_properties_typeProperties_server')]"
+					},
+					"LS_AzureSQLDatabase_properties_typeProperties_database": {
+						"value": "[parameters('LS_AzureSQLDatabase_properties_typeProperties_database')]"
+					},
+					"LS_AzureSQLDatabase_properties_typeProperties_userName": {
+						"value": "[parameters('LS_AzureSQLDatabase_properties_typeProperties_userName')]"
+					},
+					"LS_KeyVault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('LS_KeyVault_properties_typeProperties_baseUrl')]"
+					},
+					"LS_az_sql_db_d_properties_typeProperties_server": {
+						"value": "[parameters('LS_az_sql_db_d_properties_typeProperties_server')]"
+					},
+					"LS_az_sql_db_d_properties_typeProperties_database": {
+						"value": "[parameters('LS_az_sql_db_d_properties_typeProperties_database')]"
+					},
+					"LS_az_sql_db_d_properties_typeProperties_userName": {
+						"value": "[parameters('LS_az_sql_db_d_properties_typeProperties_userName')]"
+					},
+					"LS_spotify_sql_properties_typeProperties_server": {
+						"value": "[parameters('LS_spotify_sql_properties_typeProperties_server')]"
+					},
+					"LS_spotify_sql_properties_typeProperties_database": {
+						"value": "[parameters('LS_spotify_sql_properties_typeProperties_database')]"
+					},
+					"LS_spotify_sql_properties_typeProperties_userName": {
+						"value": "[parameters('LS_spotify_sql_properties_typeProperties_userName')]"
+					},
+					"RestAmericanpapers_properties_typeProperties_url": {
+						"value": "[parameters('RestAmericanpapers_properties_typeProperties_url')]"
+					},
+					"RestService1_properties_typeProperties_url": {
+						"value": "[parameters('RestService1_properties_typeProperties_url')]"
+					},
+					"Y_ls_techcrunch_properties_typeProperties_server": {
+						"value": "[parameters('Y_ls_techcrunch_properties_typeProperties_server')]"
+					},
+					"Y_ls_techcrunch_properties_typeProperties_database": {
+						"value": "[parameters('Y_ls_techcrunch_properties_typeProperties_database')]"
+					},
+					"Y_ls_techcrunch_properties_typeProperties_userName": {
+						"value": "[parameters('Y_ls_techcrunch_properties_typeProperties_userName')]"
+					},
+					"ls_data3_properties_typeProperties_url": {
+						"value": "[parameters('ls_data3_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "tech-adf_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ls_sql_database_password": {
+						"value": "[parameters('ls_sql_database_password')]"
+					},
+					"n_ls_datalake_accountKey": {
+						"value": "[parameters('n_ls_datalake_accountKey')]"
+					},
+					"ls_rest_api_properties_typeProperties_url": {
+						"value": "[parameters('ls_rest_api_properties_typeProperties_url')]"
+					},
+					"ls_sql_database_properties_typeProperties_server": {
+						"value": "[parameters('ls_sql_database_properties_typeProperties_server')]"
+					},
+					"ls_sql_database_properties_typeProperties_database": {
+						"value": "[parameters('ls_sql_database_properties_typeProperties_database')]"
+					},
+					"ls_sql_database_properties_typeProperties_userName": {
+						"value": "[parameters('ls_sql_database_properties_typeProperties_userName')]"
+					},
+					"n_ls_datalake_properties_typeProperties_url": {
+						"value": "[parameters('n_ls_datalake_properties_typeProperties_url')]"
+					},
+					"sql_vault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('sql_vault_properties_typeProperties_baseUrl')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'tech-adf_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "tech-adf_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'tech-adf_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "tech-adf_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_AzureBlobStorage_Staging_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('LS_AzureBlobStorage_Staging_properties_typeProperties_connectionString_secretName')]"
+					},
+					"Y_ls_sql_pass_properties_typeProperties_server": {
+						"value": "[parameters('Y_ls_sql_pass_properties_typeProperties_server')]"
+					},
+					"Y_ls_sql_pass_properties_typeProperties_database": {
+						"value": "[parameters('Y_ls_sql_pass_properties_typeProperties_database')]"
+					},
+					"Y_ls_sql_pass_properties_typeProperties_userName": {
+						"value": "[parameters('Y_ls_sql_pass_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'tech-adf_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "tech-adf_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'tech-adf_ArmTemplate_3')]"
+			]
+		}
+	]
+}

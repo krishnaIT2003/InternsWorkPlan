@@ -1,0 +1,2848 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "tech-adf"
+		},
+		"LS_AzureBlobStorage_Staging_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "Storage-ConnectionString"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlservertechouts.database.windows.net"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sql_database"
+		},
+		"Y_ls_sql_pass_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqltechouts"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/reporting_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_d",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "source",
+						"fileSystem": "deekshitha"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Item_Identifier",
+						"type": "String"
+					},
+					{
+						"name": "Item_Weight",
+						"type": "String"
+					},
+					{
+						"name": "Item_Fat_Content",
+						"type": "String"
+					},
+					{
+						"name": "Item_Visibility",
+						"type": "String"
+					},
+					{
+						"name": "Item_Type",
+						"type": "String"
+					},
+					{
+						"name": "Item_MRP",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Identifier",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Establishment_Year",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Size",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Location_Type",
+						"type": "String"
+					},
+					{
+						"name": "Outlet_Type",
+						"type": "String"
+					},
+					{
+						"name": "Item_Outlet_Sales",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sourcegit')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Httpsource_git",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "anshlambagit/Azure-Data-Factory/refs/heads/main/Raw%20Data/Fact_Sales_1.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_AzureBlobStorage_Staging')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "LS_KeyVault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "[parameters('LS_AzureBlobStorage_Staging_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Y_ls_sql_pass')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('Y_ls_sql_pass_properties_typeProperties_server')]",
+					"database": "[parameters('Y_ls_sql_pass_properties_typeProperties_database')]",
+					"encrypt": "optional",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('Y_ls_sql_pass_properties_typeProperties_userName')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "sql_vault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "sql-password"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Datapipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "Json_source",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "http_source",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_rel_url": {
+													"value": "@item().p_rel_url",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DelimitedText4",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_folder_name": {
+													"value": "@item().p_sink_folder",
+													"type": "Expression"
+												},
+												"p_file_name": {
+													"value": "@item().p_sink_file",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "Notebook1",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "ForEach1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/DataModeling/DataPipeline/silver_layer"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks_Ls_d",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-10-09T02:20:40Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GitToRawDynamic')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "http_source",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_rel_url": {
+													"value": "@item().p_rel_url",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DelimitedText4",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_folder_name": {
+													"value": "@item().p_sink_folder",
+													"type": "Expression"
+												},
+												"p_file_name": {
+													"value": "@item().p_sink_file",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "Json_source",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-10-06T10:33:20Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_Raw_To_Bronze_Dynamic')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "DS_Raw_Container",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata1').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@item().name",
+													"type": "Expression"
+												},
+												"wildcardFileName": "*",
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_Raw_Source_Files",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_folder_name": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_Bronze_Sink_File",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_folder_name": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-30T12:41:19Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/increm_load')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_increm_data",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Last_load",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "current_load",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select * from source_cars_data where Date_ID >  ' @{activity('Last_load').output.value[0].last_load}'  AND Date_ID <= '@{activity('current_load').output.firstRow.max_date}'",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {
+									"table_name": "source_cars_data"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_bronze",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Last_load",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select * from water_tabel",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {
+									"table_name": "water_tabel"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "current_load",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select max(Date_ID) as max_date from source_cars_data",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {
+									"table_name": "source_cars_data"
+								}
+							}
+						}
+					},
+					{
+						"name": "watermark_update",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy_increm_data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[UpdateWatermarkTable]",
+							"storedProcedureParameters": {
+								"lastload": {
+									"value": {
+										"value": "@activity('current_load').output.firstRow.max_date\n",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_az_sql_db_d",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-10-08T05:49:25Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sales')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "fact_sales",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "customer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "inventory",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "product",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/yaswanthkalyan.p@techouts.com/customer/dim_sales"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks2",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "customer",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "customer",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "inventory",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "inventory",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "product",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "product",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-26T05:55:28Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/source_prep')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_Git_data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Branch_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Branch_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Dealer_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Dealer_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Model_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Model_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Revenue",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Revenue",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "Units_Sold",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Units_Sold",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "Date_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Date_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Day",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Day",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Month",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Month",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Year",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Year",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "BranchName",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BranchName",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "DealerName",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DealerName",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_git",
+								"type": "DatasetReference",
+								"parameters": {
+									"load_flag": "SalesData.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {
+									"table_name": "source_cars_data"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-10-08T05:06:38Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/spotify')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "AzureSqlToLake",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "last_cdc",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "current",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where @{pipeline().parameters.cdc_col}>'@{activity('last_cdc').output.value[0].cdc}'",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dssoptifySql",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Parquet_dynamic",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "bronze",
+									"folder": "Users",
+									"file": {
+										"value": "@concat(pipeline().parameters.table,'_',variables('current'))",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "last_cdc",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "Json_dynamic",
+								"type": "DatasetReference",
+								"parameters": {
+									"file": "cdc.json",
+									"folder": "cdc",
+									"container": "bronze"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "current",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "current",
+							"value": {
+								"value": "@utcNow()",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "max_cdc",
+						"type": "Script",
+						"dependsOn": [
+							{
+								"activity": "AzureSqlToLake",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"linkedServiceName": {
+							"referenceName": "LS_spotify_sql",
+							"type": "LinkedServiceReference"
+						},
+						"typeProperties": {
+							"scripts": [
+								{
+									"type": "Query",
+									"text": {
+										"value": "select MAX(@{pipeline().parameters.cdc_col})as cdc from @{pipeline().parameters.schema}.@{pipeline().parameters.table}",
+										"type": "Expression"
+									}
+								}
+							],
+							"scriptBlockExecutionTimeout": "02:00:00"
+						}
+					},
+					{
+						"name": "update_last_cdc",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "max_cdc",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"additionalColumns": [
+									{
+										"name": "cdc",
+										"value": {
+											"value": "@activity('max_cdc').output.resultSets[0].rows[0].cdc",
+											"type": "Expression"
+										}
+									}
+								],
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "Json_dynamic",
+								"type": "DatasetReference",
+								"parameters": {
+									"file": "empty.json",
+									"folder": "cdc",
+									"container": "bronze"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Json_dynamic",
+								"type": "DatasetReference",
+								"parameters": {
+									"file": "cdc.json",
+									"folder": "cdc",
+									"container": "bronze"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schema": {
+						"type": "string"
+					},
+					"table": {
+						"type": "string"
+					},
+					"cdc_col": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"current": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_American')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Y_ls_sql_pass",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Lccn",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Location",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StartYear",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Language",
+						"type": "nvarchar"
+					},
+					{
+						"name": "issueCount",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "url",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PublicationDetails",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FirstIssueDate",
+						"type": "date"
+					},
+					{
+						"name": "LastIssueDate",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "AmericanPapers_2"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Y_ls_sql_pass')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Americapapers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_AzureBlobStorage_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Americanpapers.json",
+						"folderPath": "API",
+						"container": "sink"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"content.results": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"access_restricted": {
+										"type": "boolean"
+									},
+									"aka": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"batch": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"calendar_url": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"icon": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"screen_readers_only": {
+												"type": "boolean"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"campaigns": {
+										"type": "array"
+									},
+									"composite_location": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"date": {
+										"type": "string"
+									},
+									"description": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"digitized": {
+										"type": "boolean"
+									},
+									"extract_timestamp": {
+										"type": "string"
+									},
+									"group": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"hassegments": {
+										"type": "boolean"
+									},
+									"id": {
+										"type": "string"
+									},
+									"image_url": {
+										"type": "array"
+									},
+									"index": {
+										"type": "integer"
+									},
+									"item": {
+										"type": "object",
+										"properties": {
+											"call_number": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"created_published": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"date": {
+												"type": "string"
+											},
+											"format": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"genre": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"holding_data": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"dates": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"description": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"institutions": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"institution_city": {
+																		"type": "string"
+																	},
+																	"institution_name": {
+																		"type": "string"
+																	},
+																	"institution_state": {
+																		"type": "string"
+																	}
+																}
+															}
+														},
+														"number_holding_type": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"source_filename": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"language": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"location": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"medium": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"notes": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"preceding_titles": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"label": {
+															"type": "string"
+														},
+														"url": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"raw_lccn": {
+												"type": "string"
+											},
+											"source_group": {
+												"type": "string"
+											},
+											"subjects": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"succeeding_titles": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"label": {
+															"type": "string"
+														},
+														"url": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"title": {
+												"type": "string"
+											}
+										}
+									},
+									"language": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"latlong": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"location": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_city": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_country": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_county": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_state": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"location_str": {
+										"type": "string"
+									},
+									"lonlat": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"number": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_first_issue": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_hasessay": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"screen_readers_only": {
+												"type": "boolean"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_holding_type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_institution": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_issn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_issue_count": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_last_issue": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_lccn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_oclc": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_preceding_items": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_source_modified": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_succeeding_items": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"original_format": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_collection": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_division": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_title": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"publication_frequency": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"resources": {
+										"type": "array"
+									},
+									"shelf_id": {
+										"type": "string"
+									},
+									"site": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"subject": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"subject_ethnicity": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"timestamp": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"url": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_AzureBlobStorage_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_sql_American3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Y_ls_sql_pass",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Lccn",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Location",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StartYear",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Language",
+						"type": "nvarchar"
+					},
+					{
+						"name": "issueCount",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "url",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PublicationDetails",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FirstIssueDate",
+						"type": "date"
+					},
+					{
+						"name": "LastIssueDate",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "AmericanPapers_3"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Y_ls_sql_pass')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_Americanpapers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_AzureBlobStorage_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Americanpapers.json",
+						"folderPath": "API",
+						"container": "sink"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_AzureBlobStorage_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_Americanpapers_fixed')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_AzureBlobStorage_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Americanpapers_fixed.json",
+						"folderPath": "API",
+						"container": "sink"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"results": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"access_restricted": {
+										"type": "boolean"
+									},
+									"aka": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"batch": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"calendar_url": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"icon": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"screen_readers_only": {
+												"type": "boolean"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"campaigns": {
+										"type": "array"
+									},
+									"composite_location": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"date": {
+										"type": "string"
+									},
+									"description": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"digitized": {
+										"type": "boolean"
+									},
+									"extract_timestamp": {
+										"type": "string"
+									},
+									"group": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"hassegments": {
+										"type": "boolean"
+									},
+									"id": {
+										"type": "string"
+									},
+									"image_url": {
+										"type": "array"
+									},
+									"index": {
+										"type": "integer"
+									},
+									"item": {
+										"type": "object",
+										"properties": {
+											"call_number": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"created_published": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"date": {
+												"type": "string"
+											},
+											"format": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"genre": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"holding_data": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"dates": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"description": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"institutions": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"institution_city": {
+																		"type": "string"
+																	},
+																	"institution_name": {
+																		"type": "string"
+																	},
+																	"institution_state": {
+																		"type": "string"
+																	}
+																}
+															}
+														},
+														"number_holding_type": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"source_filename": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"language": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"location": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"medium": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"notes": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"preceding_titles": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"label": {
+															"type": "string"
+														},
+														"url": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"raw_lccn": {
+												"type": "string"
+											},
+											"source_group": {
+												"type": "string"
+											},
+											"subjects": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"succeeding_titles": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"label": {
+															"type": "string"
+														},
+														"url": {
+															"type": "string"
+														}
+													}
+												}
+											},
+											"title": {
+												"type": "string"
+											}
+										}
+									},
+									"language": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"latlong": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"location": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_city": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_country": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_county": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"location_state": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"location_str": {
+										"type": "string"
+									},
+									"lonlat": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"number": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_first_issue": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_hasessay": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"screen_readers_only": {
+												"type": "boolean"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_holding_type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_institution": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_issn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_issue_count": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_last_issue": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"number_lccn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_oclc": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_preceding_items": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_source_modified": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"number_succeeding_items": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"original_format": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_collection": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_division": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"partof_title": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"publication_frequency": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"resources": {
+										"type": "array"
+									},
+									"shelf_id": {
+										"type": "string"
+									},
+									"site": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"subject": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"subject_ethnicity": {
+										"type": "object",
+										"properties": {
+											"class": {
+												"type": "string"
+											},
+											"label": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									},
+									"timestamp": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"url": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_AzureBlobStorage_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_BinaryAmericanewsPaper')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_AzureBlobStorage_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Americanpapers.json",
+						"folderPath": "API",
+						"container": "sink"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_AzureBlobStorage_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_TechCrunchArticles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Y_ls_sql_pass",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "PostID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PublicationDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PostURL",
+						"type": "nvarchar"
+					},
+					{
+						"name": "AuthorID",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "TechCrunchArticles"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Y_ls_sql_pass')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_c')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Y_ls_sql_pass",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "NewspaperTitle",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Lccn",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Location",
+						"type": "nvarchar"
+					},
+					{
+						"name": "State",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StartYear",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Language",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IssueCount",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Url",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PublicationDetails",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FirstIssueDate",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastIssueDate",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Oclc",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Latitude",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 6
+					},
+					{
+						"name": "Longitude",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 6
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NewspaperTitles"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Y_ls_sql_pass')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_charisma')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Y_ls_sql_pass",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "location_city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "location_state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "start_date",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "language",
+						"type": "nvarchar"
+					},
+					{
+						"name": "digitized",
+						"type": "bit"
+					},
+					{
+						"name": "issue_count",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "created_date",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NewsPaperDatas"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Y_ls_sql_pass')]"
+			]
+		}
+	]
+}
