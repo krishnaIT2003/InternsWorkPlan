@@ -108,9 +108,12 @@
 						"referenceName": "Json_dynamic",
 						"type": "DatasetReference",
 						"parameters": {
-							"file": "cdc.json",
-							"folder": "cdc",
-							"container": "bronze"
+							"container": "bronze",
+							"folder": {
+								"value": "@{pipeline().parameters.table}_cdc",
+								"type": "Expression"
+							},
+							"file": "cdc.json"
 						}
 					},
 					"firstRowOnly": false
@@ -271,9 +274,12 @@
 									"referenceName": "Json_dynamic",
 									"type": "DatasetReference",
 									"parameters": {
-										"file": "empty.json",
-										"folder": "cdc",
-										"container": "bronze"
+										"container": "bronze",
+										"folder": {
+											"value": "@{pipeline().parameters.table}_cdc",
+											"type": "Expression"
+										},
+										"file": "empty.json"
 									}
 								}
 							],
@@ -282,9 +288,12 @@
 									"referenceName": "Json_dynamic",
 									"type": "DatasetReference",
 									"parameters": {
-										"file": "cdc.json",
-										"folder": "cdc",
-										"container": "bronze"
+										"container": "bronze",
+										"folder": {
+											"value": "@{pipeline().parameters.table}_cdc",
+											"type": "Expression"
+										},
+										"file": "cdc.json"
 									}
 								}
 							]
