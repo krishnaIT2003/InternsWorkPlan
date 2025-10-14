@@ -85,7 +85,7 @@
 											"type": "Expression"
 										},
 										"file": {
-											"value": "@concat(item().table, '_', variables('current'))\n",
+											"value": "@concat(trim(item().table), '_', trim(variables('current')))\n",
 											"type": "Expression"
 										}
 									}
@@ -261,7 +261,10 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"container": "nbronze",
-													"folder": "cdc",
+													"folder": {
+														"value": "@{item().table}_cdc",
+														"type": "Expression"
+													},
 													"file": "empty.json"
 												}
 											}
@@ -273,7 +276,7 @@
 												"parameters": {
 													"container": "nbronze",
 													"folder": {
-														"value": "@{item().table} cdc\n",
+														"value": "@{item().table}_cdc\n",
 														"type": "Expression"
 													},
 													"file": "cdc.json"
@@ -319,7 +322,39 @@
 		],
 		"parameters": {
 			"loop_input": {
-				"type": "array"
+				"type": "array",
+				"defaultValue": [
+					{
+						"schema": "dbo",
+						"table": "dimUser",
+						"cdc_col": "updated_at",
+						"from_date": ""
+					},
+					{
+						"schema": "dbo",
+						"table": "dimTrack",
+						"cdc_col": "updated_at",
+						"from_date": ""
+					},
+					{
+						"schema": "dbo",
+						"table": "dimDate",
+						"cdc_col": "date",
+						"from_date": ""
+					},
+					{
+						"schema": "dbo",
+						"table": "dimArtist",
+						"cdc_col": "updated_at",
+						"from_date": ""
+					},
+					{
+						"schema": "dbo",
+						"table": "factStream",
+						"cdc_col": "stream_timestamp",
+						"from_date": ""
+					}
+				]
 			}
 		},
 		"variables": {
