@@ -2,7 +2,7 @@
 	"name": "trigger1Spotify",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [],
 		"type": "CustomEventsTrigger",
 		"typeProperties": {
