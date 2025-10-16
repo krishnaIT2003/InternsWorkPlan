@@ -1,0 +1,17 @@
+{
+	"name": "trigger1Spotify",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "CustomEventsTrigger",
+		"typeProperties": {
+			"subjectEndsWith": "",
+			"subjectBeginsWith": "factory",
+			"scope": "/subscriptions/e81c49e7-927f-40bb-bf47-fc39138ee8aa/resourceGroups/Resource3/providers/Microsoft.EventGrid/topics/spotifyEventGrid",
+			"events": [
+				"All"
+			]
+		}
+	}
+}
